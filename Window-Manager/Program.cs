@@ -43,6 +43,8 @@ namespace Window_Manager
                 disableFlatscreenMRSim = true,
                 noFlatscreenFallback = true,
             };
+            Backend.OpenXR.UseMinimumExts = true;
+            Backend.OpenXR.RequestExt("XR_EXTX_overlay");
 
             {
                 var parentDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\OpenXR-Window-Manager";
@@ -57,7 +59,6 @@ namespace Window_Manager
                 Environment.Exit(1);
             }
 
-#if !DEBUG
             if (!SK.System.overlayApp)
             {
                 if (!Backend.OpenXR.ExtEnabled("XR_EXTX_overlay"))
@@ -68,9 +69,10 @@ namespace Window_Manager
                 {
                     MessageBox.Show("Fail to start as an overlay application. Please make sure that the main application is started.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+#if !DEBUG
                 Environment.Exit(1);
-            }
 #endif
+            }
 
             // Create the desktop form for controlling the overlay.
             DesktopMain desktopMain = new();
@@ -212,8 +214,9 @@ namespace Window_Manager
         private static void OnLog(LogLevel level, string text)
         {
             var line = "[" + level.ToString() + "] " + text;
-            Debug.WriteLine(line);
-            debugLog.WriteLine(line);
+            Debug.Write(line);
+            debugLog.Write(line);
+            debugLog.Flush();
         }
 
         // https://ourcodeworld.com/articles/read/195/capturing-screenshots-of-different-ways-with-c-and-winforms
